@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import './App.css';
-import Questions from './components/questions';
+import QuestionCard from './components/questions';
 import { FetchData, QuestionState, Difficulty } from './fetch';
 
-type AnswerObject = {
+
+
+export type AnswerObject = {
   question: string;
   answer: string;
   correct: boolean;
@@ -37,34 +39,42 @@ const App = () => {
     setLoading(false)
 
   }
-  console.log(questions[3]);
+  console.log(questions);
 
+  const checkAnswer = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!gameOver) {
+      //userAnswer
+      const answer = e.currentTarget.value;
 
-  // const checkAnswer = (e: React.MouseEvent<HTMLButtonElement>) => {
-  //   if (!gameOver) {
-  //     //userAnswer
-  //     const answer = e.currentTarget.value;
+      //Check answer
+      const correct = questions[number].correctAnswer === answer;
 
-  //     //Check answer
-  //     const correct = questions[number].correctAnswer === answer;
+      //Add score if answer is correct
+      if (correct) {
+        setScore(prev => prev + 1)
+      }
 
-  //     //Add score if answer is correct
-  //     if (correct) {
-  //       setScore(prev => prev + 1)
-  //     }
+      //Save answer in the array
+      const AnswerObject = {
+        question: questions[number].question,
+        answer,
+        correct,
+        correctAnswer: questions[number].correctAnswer
+      }
+      setUserAnswer(prev => [...prev, AnswerObject])
+    }
+  }
 
-  //     //Save answer in the array
-  //     const AnswerObject = {
-  //       question: questions[number].question,
-  //       answer,
-  //       correct,
-  //       correctAnswer: questions[number].correctAnswer
-  //     }
-  //     setUserAnswer(prev => [...prev, AnswerObject])
-  //   }
-  // }
+  const nextQuestion = () => {
+    //Move to the next question if not the last question
+    const nextQuestion = number + 1;
+    if (nextQuestion === totalQuestions) {
+      setGameOver(true)
+    } else {
+      setNumber(nextQuestion)
+    }
+  }
 
-  const nextQuestion = () => { }
   return (
     <main>
       <h1> TypeScipt Quiz</h1>
@@ -72,17 +82,17 @@ const App = () => {
         <button onClick={start}>Start</button>)
         : null}
 
-      {!gameOver ? <p>Score : </p> : null}
+      {!gameOver ? <p>Score : {score} </p> : null}
       {loading && <p>Loading Questions</p>}
 
       {!loading && !gameOver && (
-        <Questions
+        <QuestionCard
           questionNr={number + 1}
           totalQuestions={totalQuestions}
           question={questions[number].question}
           answers={questions[number].answers}
-        // userAnswer={userAnswer ? userAnswer[number] : undefined}
-        // callback={checkAnswer}
+          userAnswer={userAnswer ? userAnswer[number] : undefined}
+          callback={checkAnswer}
         />)}
       {!gameOver &&
         !loading &&

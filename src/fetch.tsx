@@ -1,5 +1,6 @@
 // import Question from "./components/questions";
-import { shuffleArray } from "./utils";
+
+import { shuffledArray } from "./utils";
 
 export type Question = {
     category: string;
@@ -22,15 +23,17 @@ export const FetchData = async (amount: number, difficulty: Difficulty) => {
     const url = `https://the-trivia-api.com/api/questions?categories=general_knowledge&limit=15&difficulty=${difficulty}`
     const res = await fetch(url)
     const data = await res.json();
-    console.log(data);
-    return data.map((question: Question) => (
+    return data.map((question: Question) =>
+    (
         {
             ...question,
-            answers: shuffleArray([
-                // ...question.incorrectAnswers,
+            answers: shuffledArray([
+                ...question.incorrectAnswers,
                 question.correctAnswer
             ])
         })
     )
 }
+
+
 
